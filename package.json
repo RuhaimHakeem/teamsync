@@ -1,0 +1,19 @@
+{
+  "name": "teamsync",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run start:dev --workspace=@teamsync/api",
+    "dev:web": "npm run dev --workspace=@teamsync/web",
+    "dev:mobile": "npm run start --workspace=@teamsync/mobile",
+    "db:studio": "npm run prisma:studio --workspace=@teamsync/api",
+    "build": "npm run build --workspace=@teamsync/api && npm run build --workspace=@teamsync/web",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

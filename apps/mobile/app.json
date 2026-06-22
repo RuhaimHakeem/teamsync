@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "TeamSync",
+    "slug": "teamsync",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.teamsync.mobile"
+    }
+  }
+}
