@@ -6,7 +6,6 @@ import { compare, hash } from 'bcryptjs';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuthTokenPayload } from './types/auth-token-payload';
 
@@ -39,7 +38,7 @@ export class AuthService {
         },
       });
 
-      return this.createAuthResponse(user);
+      return this.createAuthResponse(user, dto.rememberMe ?? false);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         throw new ConflictException('An account with this email already exists');
@@ -55,14 +54,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    return this.createAuthResponse(user);
+    return this.createAuthResponse(user, dto.rememberMe ?? false);
   }
 
-  async refresh(dto: RefreshTokenDto) {
+  async refresh(refreshToken?: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token is required');
+    }
+
     let payload: AuthTokenPayload;
 
     try {
-      payload = await this.jwtService.verifyAsync<AuthTokenPayload>(dto.refreshToken, {
+      payload = await this.jwtService.verifyAsync<AuthTokenPayload>(refreshToken, {
         secret: this.refreshSecret,
       });
     } catch {
@@ -78,10 +81,29 @@ export class AuthService {
       throw new UnauthorizedException('User no longer exists');
     }
 
-    return this.createAuthResponse(user);
+    return this.createAuthResponse(user, payload.rememberMe ?? false);
   }
 
-  private async createAuthResponse(user: User) {
+  async findCurrentUser(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
+    }
+
+    return user;
+  }
+
+  private async createAuthResponse(user: User, rememberMe: boolean) {
     const basePayload = {
       sub: user.id,
       email: user.email,
@@ -94,7 +116,7 @@ export class AuthService {
         { secret: this.accessSecret, expiresIn: this.accessExpiresIn },
       ),
       this.jwtService.signAsync(
-        { ...basePayload, type: 'refresh', jti: randomUUID() },
+        { ...basePayload, type: 'refresh', rememberMe, jti: randomUUID() },
         { secret: this.refreshSecret, expiresIn: this.refreshExpiresIn },
       ),
     ]);
@@ -109,6 +131,7 @@ export class AuthService {
       },
       accessToken,
       refreshToken,
+      rememberMe,
     };
   }
 }

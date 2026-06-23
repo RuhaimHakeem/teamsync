@@ -5,6 +5,7 @@ export interface AuthTokenPayload {
   email: string;
   role: UserRole;
   type: 'access' | 'refresh';
+  rememberMe?: boolean;
   jti?: string;
   iat?: number;
   exp?: number;
