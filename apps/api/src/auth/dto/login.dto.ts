@@ -14,4 +14,8 @@ export class LoginDto {
   @IsOptional()
   @IsBoolean()
   rememberMe?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  returnTokens?: boolean;
 }

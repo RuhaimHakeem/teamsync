@@ -106,7 +106,12 @@ export function login(email: string, password: string, rememberMe: boolean) {
   });
 }
 
-export function registerAccount(name: string, email: string, password: string, rememberMe: boolean) {
+export function registerAccount(
+  name: string,
+  email: string,
+  password: string,
+  rememberMe: boolean,
+) {
   return apiFetch<AuthResponse>("/auth/register", {
     method: "POST",
     body: { name, email, password, rememberMe },

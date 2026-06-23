@@ -82,11 +82,8 @@ model Task {
   assignee    User         @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
   comments    Comment[]
 
-  // Main project task-list query with equality filters and due-date sorting.
   @@index([projectId, status, assigneeId, dueDate])
-  // Keeps due-date sorting efficient when optional filters are not supplied.
   @@index([projectId, dueDate])
-  // Supports the mobile app's "my tasks" list.
   @@index([assigneeId, status, dueDate])
 }
 

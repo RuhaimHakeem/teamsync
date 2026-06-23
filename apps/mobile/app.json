@@ -4,12 +4,19 @@
     "slug": "teamsync",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "teamsync",
     "userInterfaceStyle": "light",
+    "plugins": ["expo-router"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "package": "com.teamsync.mobile"
+    },
+    "extra": {
+      "router": {
+        "root": "app"
+      }
     }
   }
 }

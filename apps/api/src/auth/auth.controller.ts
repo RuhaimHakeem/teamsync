@@ -40,7 +40,7 @@ export class AuthController {
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const auth = await this.authService.login(dto);
     this.setAuthCookies(response, auth.accessToken, auth.refreshToken, auth.rememberMe);
-    return { user: auth.user };
+    return this.authResponse(auth, dto.returnTokens ?? false);
   }
 
   @Post('refresh')
@@ -53,7 +53,7 @@ export class AuthController {
     const refreshToken = dto?.refreshToken ?? readCookieFromRequest(request, REFRESH_TOKEN_COOKIE);
     const auth = await this.authService.refresh(refreshToken);
     this.setAuthCookies(response, auth.accessToken, auth.refreshToken, auth.rememberMe);
-    return { user: auth.user };
+    return this.authResponse(auth, dto?.returnTokens ?? false);
   }
 
   @Post('logout')
@@ -83,6 +83,21 @@ export class AuthController {
       ...this.baseCookieOptions(),
       ...(rememberMe ? { maxAge: this.refreshCookieMaxAgeMs } : {}),
     });
+  }
+
+  private authResponse(
+    auth: Awaited<ReturnType<AuthService['login']>>,
+    includeTokens: boolean,
+  ) {
+    return {
+      user: auth.user,
+      ...(includeTokens
+        ? {
+            accessToken: auth.accessToken,
+            refreshToken: auth.refreshToken,
+          }
+        : {}),
+    };
   }
 
   private baseCookieOptions(): CookieOptions {

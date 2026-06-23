@@ -24,9 +24,11 @@ export class TasksService {
       priority: query.priority,
       assigneeId: query.assignee,
     };
+
     const orderBy: Prisma.TaskOrderByWithRelationInput = {
       [query.sortBy]: query.sortOrder,
     };
+
     const skip = (query.page - 1) * query.limit;
 
     const [tasks, total] = await this.prisma.$transaction([
@@ -39,6 +41,7 @@ export class TasksService {
         skip,
         take: query.limit,
       }),
+
       this.prisma.task.count({ where }),
     ]);
 
@@ -84,6 +87,17 @@ export class TasksService {
         dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
       },
       include: { assignee: { select: { id: true, name: true, email: true } } },
+    });
+  }
+
+  async findAssignedToMe(user: AuthUser) {
+    return this.prisma.task.findMany({
+      where: { assigneeId: user.id },
+      include: {
+        assignee: { select: { id: true, name: true, email: true } },
+        project: { select: { id: true, name: true } },
+      },
+      orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
     });
   }
 
@@ -170,6 +184,7 @@ export class TasksService {
         where: { id: projectId },
         select: { id: true },
       });
+
       if (!project) {
         throw new NotFoundException("Project not found");
       }
