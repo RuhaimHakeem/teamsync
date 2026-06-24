@@ -181,11 +181,11 @@ between all three accounts:
 user can create a project. `ProjectRole` belongs to a `ProjectMember` record and
 controls what the user can do inside one specific project.
 
-| Account | Global `UserRole` | TeamSync Launch | Mobile App Improvements | API Stability |
-| ------- | ----------------- | --------------- | ----------------------- | ------------- |
-| Ava Admin | `ADMIN` | `MEMBER` | `MANAGER` | `MEMBER` |
-| Maya Manager | `MANAGER` | `MANAGER` | `MEMBER` | `MANAGER` |
-| Sam Member | `MEMBER` | `MEMBER` | `MANAGER` | `MEMBER` |
+| Account      | Global `UserRole` | TeamSync Launch | Mobile App Improvements | API Stability |
+| ------------ | ----------------- | --------------- | ----------------------- | ------------- |
+| Ava Admin    | `ADMIN`           | `MEMBER`        | `MANAGER`               | `MEMBER`      |
+| Maya Manager | `MANAGER`         | `MANAGER`       | `MEMBER`                | `MANAGER`     |
+| Sam Member   | `MEMBER`          | `MEMBER`        | `MANAGER`               | `MEMBER`      |
 
 This intentionally creates useful demo scenarios:
 
@@ -440,3 +440,13 @@ model Task {
 - The local setup uses free local infrastructure only.
 - `npm run docker:up` starts Postgres and the API, applies migrations, and seeds demo data through Docker Compose.
 - If Prisma Studio shows stale-client errors, stop the old Studio process and restart it with `npm run db:studio`.
+
+### Dependency audit
+
+At the time of submission, `npm audit` reports known transitive dependency
+advisories, mainly within the NestJS, Expo/Metro, Next.js/PostCSS, and Jest
+toolchains. TeamSync does not implement file-upload endpoints, so the reported
+Multer advisory is not exposed through application functionality.
+
+The available non-breaking Prisma security patch has been applied. Automated force-fixes were intentionally avoided because npm proposes incompatible framework downgrades or major-version upgrades for the remaining findings. In
+a production project, these dependencies would be reviewed and upgraded through tested framework releases as compatible fixes become available.
