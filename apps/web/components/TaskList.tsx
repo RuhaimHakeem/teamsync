@@ -167,7 +167,7 @@ export function TaskList({
             {tasks.data.map((task) => (
               <Link
                 className="block p-4 transition hover:bg-neutral-50"
-                href={`/tasks/${task.id}`}
+                href={`/tasks/${task.id}?projectId=${project.id}`}
                 key={task.id}
               >
                 <div className="flex flex-col gap-3 tablet:flex-row tablet:items-start tablet:justify-between">

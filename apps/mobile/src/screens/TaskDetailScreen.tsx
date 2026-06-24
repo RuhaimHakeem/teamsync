@@ -1,10 +1,19 @@
-import { ActivityIndicator, Alert, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { AppButton } from '../components/AppButton';
-import { StatusBadge } from '../components/StatusBadge';
-import { createComment } from '../lib/api';
-import { colors, spacing, sharedStyles } from '../theme';
-import type { Comment, TaskDetail, User } from '../types';
-import { formatDate } from '../utils/date';
+import {
+  ActivityIndicator,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { AppButton } from "../components/AppButton";
+import { StatusBadge } from "../components/StatusBadge";
+import { createComment } from "../lib/api";
+import { colors, spacing, sharedStyles } from "../theme";
+import type { Comment, TaskDetail, User } from "../types";
+import { formatDate } from "../utils/date";
 
 type TaskDetailScreenProps = {
   user: User | null;
@@ -45,7 +54,7 @@ export function TaskDetailScreen({
       ...taskDetail,
       comments: [...taskDetail.comments, optimisticComment],
     });
-    onCommentBodyChange('');
+    onCommentBodyChange("");
     onAddingCommentChange(true);
 
     try {
@@ -56,7 +65,10 @@ export function TaskDetailScreen({
       });
     } catch (error) {
       onOptimisticComment(previousDetail);
-      Alert.alert('Comment not added', error instanceof Error ? error.message : 'Try again.');
+      Alert.alert(
+        "Comment not added",
+        error instanceof Error ? error.message : "Try again.",
+      );
     } finally {
       onAddingCommentChange(false);
     }
@@ -65,7 +77,11 @@ export function TaskDetailScreen({
   return (
     <SafeAreaView style={sharedStyles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
-        <AppButton label="← Back to tasks" onPress={onBack} variant="secondary" />
+        <AppButton
+          label="← Back to tasks"
+          onPress={onBack}
+          variant="secondary"
+        />
 
         {!taskDetail ? (
           <View style={styles.centeredBlock}>
@@ -76,13 +92,18 @@ export function TaskDetailScreen({
           <View style={sharedStyles.card}>
             <Text style={sharedStyles.h1}>{taskDetail.title}</Text>
             <Text style={sharedStyles.bodyText}>
-              {taskDetail.description || 'No description added.'}
+              {taskDetail.description || "No description added."}
             </Text>
             <View style={sharedStyles.metaRow}>
-              <StatusBadge label={taskDetail.status} status={taskDetail.status} />
+              <StatusBadge
+                label={taskDetail.status}
+                status={taskDetail.status}
+              />
               <StatusBadge label={taskDetail.priority} />
             </View>
-            <Text style={sharedStyles.caption}>Due: {formatDate(taskDetail.dueDate)}</Text>
+            <Text style={sharedStyles.caption}>
+              Due: {formatDate(taskDetail.dueDate)}
+            </Text>
 
             <Text style={sharedStyles.h2}>Comments</Text>
             {taskDetail.comments.length === 0 ? (
@@ -90,7 +111,9 @@ export function TaskDetailScreen({
             ) : (
               taskDetail.comments.map((comment) => (
                 <View key={comment.id} style={styles.comment}>
-                  <Text style={styles.commentAuthor}>{comment.author.name}</Text>
+                  <Text style={styles.commentAuthor}>
+                    {comment.author.name}
+                  </Text>
                   <Text style={sharedStyles.bodyText}>{comment.body}</Text>
                 </View>
               ))
@@ -105,7 +128,7 @@ export function TaskDetailScreen({
             />
             <AppButton
               disabled={isAddingComment || !commentBody.trim()}
-              label={isAddingComment ? 'Adding...' : 'Add comment'}
+              label={isAddingComment ? "Adding..." : "Add comment"}
               onPress={addComment}
             />
           </View>
@@ -121,14 +144,14 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   centeredBlock: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: spacing.sm,
     padding: spacing.xxl,
   },
   commentInput: {
     minHeight: 96,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   comment: {
     borderLeftWidth: 3,
@@ -139,6 +162,6 @@ const styles = StyleSheet.create({
   commentAuthor: {
     color: colors.neutral900,
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });

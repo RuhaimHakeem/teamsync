@@ -1,6 +1,8 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +22,16 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle("TeamSync API")
+    .setDescription("REST API for the TeamSync project and task tracker")
+    .setVersion("1.0")
+    .addBearerAuth()
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup("api/docs", app, swaggerDocument);
 
   const port = process.env.PORT ?? 3001;
   await app.listen(port);

@@ -2,7 +2,9 @@ import type {
   AuthResponse,
   PaginatedTasks,
   Project,
+  Task,
   TaskDetail,
+  TaskStatus,
   User,
 } from "./types";
 
@@ -143,6 +145,13 @@ export function getProjectTasks(projectId: string, query: URLSearchParams) {
 
 export function getTask(taskId: string) {
   return apiFetch<TaskDetail>(`/tasks/${taskId}`);
+}
+
+export function updateTaskStatus(taskId: string, status: TaskStatus) {
+  return apiFetch<Task>(`/tasks/${taskId}`, {
+    method: "PATCH",
+    body: { status },
+  });
 }
 
 export function addComment(taskId: string, body: string) {

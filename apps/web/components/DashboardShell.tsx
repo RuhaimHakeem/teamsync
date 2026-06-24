@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   getCurrentUser,
@@ -21,8 +21,9 @@ const initialFilters: TaskFilters = {
 
 export function DashboardShell() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const [selectedProjectId, setSelectedProjectId] = useState<string>();
+  const selectedProjectId = searchParams.get("projectId") ?? undefined;
   const [filters, setFilters] = useState<TaskFilters>(initialFilters);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -37,10 +38,18 @@ export function DashboardShell() {
   });
 
   useEffect(() => {
-    if (!selectedProjectId && projectsQuery.data?.length) {
-      setSelectedProjectId(projectsQuery.data[0].id);
+    if (!projectsQuery.data?.length) return;
+
+    const selectedProjectExists = projectsQuery.data.some(
+      (project) => project.id === selectedProjectId,
+    );
+
+    if (!selectedProjectExists) {
+      router.replace(`/dashboard?projectId=${projectsQuery.data[0].id}`, {
+        scroll: false,
+      });
     }
-  }, [projectsQuery.data, selectedProjectId]);
+  }, [projectsQuery.data, router, selectedProjectId]);
 
   const selectedProject = projectsQuery.data?.find(
     (project) => project.id === selectedProjectId,
@@ -78,9 +87,9 @@ export function DashboardShell() {
   }
 
   function handleProjectSelect(projectId: string) {
-    setSelectedProjectId(projectId);
     setFilters(initialFilters);
     setDrawerOpen(false);
+    router.replace(`/dashboard?projectId=${projectId}`, { scroll: false });
   }
 
   if (projectsQuery.isLoading) {
